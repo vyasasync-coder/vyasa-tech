@@ -17,14 +17,12 @@ export function useFileSystem() {
         const saved = await get<FileSystemDirectoryHandle>(IDB_KEY);
         if (!saved) { setIsRestoring(false); return; }
 
-        // Verifica se a permissão ainda está ativa
         const perm = await (saved as any).queryPermission({ mode: 'readwrite' });
         if (perm === 'granted') {
           setRootHandle(saved);
         }
-        // Se 'prompt', aguarda o usuário clicar — não abre o picker automaticamente
       } catch {
-        await del(IDB_KEY); // handle inválido, remove
+        await del(IDB_KEY);
       } finally {
         setIsRestoring(false);
       }
@@ -32,38 +30,51 @@ export function useFileSystem() {
     restore();
   }, []);
 
-  const requestAccess = useCallback(async () => {
+  // Tenta usar workspace salvo sem abrir picker (só requestPermission)
+  const requestAccessSilent = useCallback(async () => {
+    try {
+      const saved = await get<FileSystemDirectoryHandle>(IDB_KEY).catch(() => null);
+      if (!saved) return null;
+      const perm = await (saved as any).requestPermission({ mode: 'readwrite' });
+      if (perm === 'granted') {
+        setRootHandle(saved);
+        return saved;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, [setRootHandle]);
+
+  // Abre picker de pasta explicitamente (usado só em "Abrir Projeto Existente")
+  const openWithPicker = useCallback(async () => {
     try {
       setError(null);
-
-      // Se já temos um handle salvo mas precisamos de re-permissão, tenta sem abrir picker
-      const saved = await get<FileSystemDirectoryHandle>(IDB_KEY).catch(() => null);
-      if (saved) {
-        const perm = await (saved as any).requestPermission({ mode: 'readwrite' });
-        if (perm === 'granted') {
-          setRootHandle(saved);
-          return saved;
-        }
-      }
-
-      // Abre o picker para selecionar pasta
       const handle = await (window as any).showDirectoryPicker({ mode: 'readwrite' });
-      await set(IDB_KEY, handle); // salva no IndexedDB
+      await set(IDB_KEY, handle);
       setRootHandle(handle);
       return handle;
     } catch (err: any) {
       if (err.name !== 'AbortError') {
         setError('Acesso negado ou navegador não suportado. Use Chrome ou Edge.');
-        console.error('File System Access Error:', err);
       }
       return null;
     }
-  }, []);
+  }, [setRootHandle]);
+
+  // Salva um handle como workspace (usado pelo wizard após criar pasta)
+  const saveWorkspaceHandle = useCallback(async (handle: FileSystemDirectoryHandle) => {
+    await set(IDB_KEY, handle);
+    setRootHandle(handle);
+  }, [setRootHandle]);
 
   const disconnect = useCallback(async () => {
     await del(IDB_KEY);
     setRootHandle(null);
   }, []);
 
-  return { rootHandle, isGranted, isRestoring, requestAccess, disconnect, error };
+  // Mantido para compatibilidade com App.tsx
+  const requestAccess = openWithPicker;
+
+  return { rootHandle, isGranted, isRestoring, requestAccess, requestAccessSilent, openWithPicker, saveWorkspaceHandle, disconnect, error };
 }

@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { useFileSystem } from '../../hooks/useFileSystem';
 import { ParticlesBackground } from '../layout/ParticlesBackground';
+import { NewProjectWizard } from '../wizard/NewProjectWizard';
 
-interface WelcomeScreenProps {
-  onConnect: () => Promise<any>;
-  connectError: string | null;
-  onNewProject: () => void;
-}
-
-export function WelcomeScreen({ onConnect, connectError, onNewProject }: WelcomeScreenProps) {
+export function WelcomeScreen() {
   const { user, profile, signOut } = useAuthStore();
+  const { requestAccessSilent, openWithPicker } = useFileSystem();
   const [connecting, setConnecting] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
+  const [noWorkspace, setNoWorkspace] = useState(false);
 
   const displayName = profile?.full_name
     || user?.user_metadata?.full_name
@@ -20,20 +19,29 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
   const isPro = profile?.plan === 'pro';
 
   const handleOpenCockpit = async () => {
+    setNoWorkspace(false);
     setConnecting(true);
-    await onConnect();
+    const handle = await requestAccessSilent();
     setConnecting(false);
+    if (!handle) setNoWorkspace(true);
+    // Se handle: App.tsx auto-transiciona para cockpit via workspaceStore
   };
 
-  const handleNewProject = async () => {
+  const handleOpenExisting = async () => {
     setConnecting(true);
-    const handle = await onConnect();
+    await openWithPicker();
     setConnecting(false);
-    if (handle) onNewProject();
   };
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-vyasa-900">
+      {showWizard && (
+        <NewProjectWizard
+          onClose={() => setShowWizard(false)}
+          onSuccess={() => setShowWizard(false)}
+        />
+      )}
+
       <ParticlesBackground />
 
       <div className="absolute inset-0 pointer-events-none">
@@ -61,7 +69,6 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
       {/* DASHBOARD */}
       <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-6 py-12">
 
-        {/* Saudação */}
         <div className="text-center mb-12">
           <p className="text-saffron-400/50 text-xs tracking-[0.5em] uppercase mb-3">Cockpit de Arquitetura</p>
           <h2 className="text-5xl font-serif text-white mb-3">
@@ -70,8 +77,7 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
           <p className="text-vyasa-100/40 text-sm">O que vamos construir hoje?</p>
         </div>
 
-        {/* CTAs PRINCIPAIS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-4">
 
           {/* Meus Projetos */}
           <button
@@ -92,9 +98,8 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
 
           {/* Novo Projeto */}
           <button
-            onClick={handleNewProject}
-            disabled={connecting}
-            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left disabled:opacity-50"
+            onClick={() => setShowWizard(true)}
+            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-vyasa-700/60 border border-saffron-500/20 flex items-center justify-center text-saffron-400/70 group-hover:text-saffron-400 group-hover:scale-110 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
@@ -106,14 +111,20 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
           </button>
         </div>
 
-        {connectError && (
-          <p className="text-red-400 text-xs mb-4 max-w-sm text-center">{connectError}</p>
+        {noWorkspace && (
+          <p className="text-saffron-400/70 text-xs mb-3 text-center">
+            Nenhum workspace salvo. Crie um projeto primeiro ou use "Abrir Projeto Existente".
+          </p>
         )}
 
-        {/* Nota primeira vez */}
-        <p className="text-[11px] text-vyasa-100/20 mt-2">
-          Na primeira vez, você autorizará o acesso à pasta de projetos no seu disco. Após isso, tudo é automático.
-        </p>
+        {/* Opção secundária */}
+        <button
+          onClick={handleOpenExisting}
+          disabled={connecting}
+          className="text-[11px] text-vyasa-100/25 hover:text-vyasa-100/50 transition-colors underline underline-offset-2 mt-2"
+        >
+          Abrir Projeto Existente
+        </button>
 
       </main>
     </div>
