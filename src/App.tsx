@@ -12,7 +12,7 @@ import { SettingsModal } from './components/settings/SettingsModal';
 import { GlobalKnowledgeBank } from './components/knowledge/GlobalKnowledgeBank';
 
 function App() {
-  const { isGranted, rootHandle, requestAccess, error: fsError } = useFileSystem();
+  const { isGranted, rootHandle, requestAccess, isRestoring, error: fsError } = useFileSystem();
   const { session, isLoading, initAuth, profile, signOut } = useAuthStore();
   const { showGlobalKB } = useWorkspaceStore();
   const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -36,8 +36,8 @@ function App() {
     window.dispatchEvent(new Event('vyasa-reload-sidebar'));
   };
 
-  // ── Estado 0: Carregando sessão ──
-  if (isLoading) {
+  // ── Estado 0: Carregando sessão ou restaurando workspace ──
+  if (isLoading || isRestoring) {
     return (
       <div className="min-h-screen bg-vyasa-900 flex items-center justify-center">
         <ParticlesBackground />

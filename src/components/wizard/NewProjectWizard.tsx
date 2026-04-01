@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
+import { useFileSystem } from '../../hooks/useFileSystem';
 import { InceptionChat } from '../inception/InceptionChat';
 
 interface WizardProps {
@@ -9,6 +10,7 @@ interface WizardProps {
 
 export const NewProjectWizard: React.FC<WizardProps> = ({ onClose, onSuccess }) => {
   const { rootHandle } = useWorkspaceStore();
+  const { requestAccess } = useFileSystem();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -64,15 +66,25 @@ Phase 4: Execution
   };
 
   const handleCreateProject = async () => {
-    if (!rootHandle) return setError('Workspace não conectado.');
     if (!projectName.trim()) return setError('Nome do projeto é obrigatório.');
-    
+
     setLoading(true);
     setError('');
 
     try {
+      // Garante workspace conectado antes de criar
+      let handle = rootHandle;
+      if (!handle) {
+        handle = await requestAccess();
+        if (!handle) {
+          setError('Workspace não conectado. Selecione uma pasta para continuar.');
+          setLoading(false);
+          return;
+        }
+      }
+
       // 1. Cria a sub-pasta (Diretório do Projeto) dentro da raiz do Workspace
-      const projectFolder = await (rootHandle as any).getDirectoryHandle(
+      const projectFolder = await (handle as any).getDirectoryHandle(
         projectName.trim().toLowerCase().replace(/ /g, '-'), 
         { create: true }
       );

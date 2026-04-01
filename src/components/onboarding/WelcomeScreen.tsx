@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { ParticlesBackground } from '../layout/ParticlesBackground';
+import { NewProjectWizard } from '../wizard/NewProjectWizard';
 
 interface WelcomeScreenProps {
   onConnect: () => Promise<any>;
   connectError: string | null;
-  onNewProject: () => void; // abre o wizard após conectar
+  onNewProject: () => void;
 }
 
 export function WelcomeScreen({ onConnect, connectError, onNewProject }: WelcomeScreenProps) {
   const { user, profile, signOut } = useAuthStore();
   const [connecting, setConnecting] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
 
   const displayName = profile?.full_name
     || user?.user_metadata?.full_name
@@ -25,15 +27,19 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
     setConnecting(false);
   };
 
-  const handleNewProject = async () => {
-    setConnecting(true);
-    const handle = await onConnect();
-    setConnecting(false);
-    if (handle) onNewProject();
+  const handleNewProject = () => {
+    setShowWizard(true);
   };
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-vyasa-900">
+      {showWizard && (
+        <NewProjectWizard
+          onClose={() => setShowWizard(false)}
+          onSuccess={() => { onConnect(); setShowWizard(false); }}
+        />
+      )}
+
       <ParticlesBackground />
 
       <div className="absolute inset-0 pointer-events-none">
@@ -84,7 +90,7 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
             </div>
             <div>
               <p className="text-white font-bold tracking-wide text-sm">
-                {connecting ? 'Conectando...' : 'Abrir Cockpit'}
+                {connecting ? 'Conectando...' : 'Meus Projetos'}
               </p>
               <p className="text-vyasa-100/40 text-xs mt-0.5">Ver projetos em andamento</p>
             </div>
@@ -93,8 +99,7 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
           {/* Novo Projeto */}
           <button
             onClick={handleNewProject}
-            disabled={connecting}
-            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left disabled:opacity-50"
+            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-vyasa-700/60 border border-saffron-500/20 flex items-center justify-center text-saffron-400/70 group-hover:text-saffron-400 group-hover:scale-110 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
