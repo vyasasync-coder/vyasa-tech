@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { ParticlesBackground } from '../layout/ParticlesBackground';
-import { NewProjectWizard } from '../wizard/NewProjectWizard';
 
 interface WelcomeScreenProps {
   onConnect: () => Promise<any>;
@@ -12,7 +11,6 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onConnect, connectError, onNewProject }: WelcomeScreenProps) {
   const { user, profile, signOut } = useAuthStore();
   const [connecting, setConnecting] = useState(false);
-  const [showWizard, setShowWizard] = useState(false);
 
   const displayName = profile?.full_name
     || user?.user_metadata?.full_name
@@ -27,19 +25,15 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
     setConnecting(false);
   };
 
-  const handleNewProject = () => {
-    setShowWizard(true);
+  const handleNewProject = async () => {
+    setConnecting(true);
+    const handle = await onConnect();
+    setConnecting(false);
+    if (handle) onNewProject();
   };
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-vyasa-900">
-      {showWizard && (
-        <NewProjectWizard
-          onClose={() => setShowWizard(false)}
-          onSuccess={() => { onConnect(); setShowWizard(false); }}
-        />
-      )}
-
       <ParticlesBackground />
 
       <div className="absolute inset-0 pointer-events-none">
@@ -79,7 +73,7 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
         {/* CTAs PRINCIPAIS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-6">
 
-          {/* Ir ao Cockpit */}
+          {/* Meus Projetos */}
           <button
             onClick={handleOpenCockpit}
             disabled={connecting}
@@ -99,7 +93,8 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
           {/* Novo Projeto */}
           <button
             onClick={handleNewProject}
-            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left"
+            disabled={connecting}
+            className="group flex flex-col items-start gap-3 p-6 rounded-xl bg-vyasa-800/40 border border-saffron-500/15 hover:border-saffron-500/40 hover:bg-vyasa-800/60 transition-all duration-200 text-left disabled:opacity-50"
           >
             <div className="w-10 h-10 rounded-lg bg-vyasa-700/60 border border-saffron-500/20 flex items-center justify-center text-saffron-400/70 group-hover:text-saffron-400 group-hover:scale-110 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
@@ -115,9 +110,9 @@ export function WelcomeScreen({ onConnect, connectError, onNewProject }: Welcome
           <p className="text-red-400 text-xs mb-4 max-w-sm text-center">{connectError}</p>
         )}
 
-        {/* Link terciário */}
+        {/* Nota primeira vez */}
         <p className="text-[11px] text-vyasa-100/20 mt-2">
-          Ao abrir o cockpit, você autoriza o acesso à pasta de projetos no seu disco.
+          Na primeira vez, você autorizará o acesso à pasta de projetos no seu disco. Após isso, tudo é automático.
         </p>
 
       </main>
