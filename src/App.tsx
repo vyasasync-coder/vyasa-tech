@@ -56,13 +56,7 @@ function App() {
 
   // ── Estado 2: Autenticado, mas sem Workspace conectado → Dashboard ──
   if (!isGranted || !rootHandle) {
-    return (
-      <WelcomeScreen
-        onConnect={requestAccess}
-        connectError={fsError}
-        onNewProject={() => setIsWizardOpen(true)}
-      />
-    );
+    return <WelcomeScreen />;
   }
 
   // ── Estado 3: Autenticado + Workspace conectado → Cockpit completo ──

@@ -105,42 +105,48 @@ export const InceptionChat: React.FC<InceptionChatProps> = ({
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [skills, setSkills] = useState<Record<string, string>>({});
+  const [skillsReady, setSkillsReady] = useState(false);
   const [contextDoc, setContextDoc] = useState('');
   const [showContextForm, setShowContextForm] = useState(false);
   const [filesGenerated, setFilesGenerated] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Carrega skills do filesystem ao montar
+  // Carrega skills do filesystem ao montar (opcional — enriquece o prompt mas não bloqueia)
   useEffect(() => {
     async function load() {
-      if (!rootHandle) return;
-      const [brainstorm, planWriting, projectPlanner] = await Promise.all([
-        loadSkillFile(rootHandle, '.agent/skills/brainstorming/SKILL.md'),
-        loadSkillFile(rootHandle, '.agent/skills/plan-writing/SKILL.md'),
-        loadSkillFile(rootHandle, '.agent/agents/project-planner.md'),
-      ]);
-      setSkills({
-        brainstorming: brainstorm,
-        'plan-writing': planWriting,
-        'project-planner': projectPlanner,
-      });
+      if (rootHandle) {
+        const [brainstorm, planWriting, projectPlanner] = await Promise.all([
+          loadSkillFile(rootHandle, '.agent/skills/brainstorming/SKILL.md'),
+          loadSkillFile(rootHandle, '.agent/skills/plan-writing/SKILL.md'),
+          loadSkillFile(rootHandle, '.agent/agents/project-planner.md'),
+        ]);
+        setSkills({
+          brainstorming: brainstorm,
+          'plan-writing': planWriting,
+          'project-planner': projectPlanner,
+        });
+      }
+      // Skills são opcionais — inicia mesmo sem elas
+      setSkillsReady(true);
     }
     load();
   }, [rootHandle]);
 
   // Mensagem inicial ao entrar em cada fase
   useEffect(() => {
-    if (messages.length === 0 && Object.keys(skills).length > 0) {
+    if (messages.length === 0 && skillsReady) {
+      const skillsMsg = Object.values(skills).some(s => s)
+        ? 'Skills carregadas: brainstorming, plan-writing, project-planner'
+        : 'Operando sem skills locais (configure o .agent no workspace para enriquecer os prompts)';
       setMessages([{
         id: 'welcome',
         role: 'system',
-        content: `**Inception iniciado — Fase: ${phase.toUpperCase()}**\n\nSkills carregadas: brainstorming, plan-writing, project-planner\n\nDigite sua primeira mensagem ou importe um documento de contexto (público-alvo, ID visual, etc).`,
+        content: `**Inception iniciado — ${projectName}**\n\n${skillsMsg}\n\nDigite sua primeira mensagem ou importe um documento de contexto.`,
       }]);
-      // Auto-dispara a primeira mensagem do agente
       sendInitialGreeting();
     }
-  }, [skills]);
+  }, [skillsReady]);
 
   const sendInitialGreeting = async () => {
     if (isStreaming) return;
