@@ -3,13 +3,7 @@ import { useWorkspaceStore } from '../../store/workspaceStore';
 import { ProjectColumn } from './ProjectColumn';
 
 export const WorkspaceBoard: React.FC = () => {
-  const { projects, activeProjectIndex, nextProject, prevProject, addProject } = useWorkspaceStore();
-
-  // Função simulada apenas para você ver o design antes da leitura real dos relatórios
-  const mockProjeto = () => {
-    const id = Math.random().toString(36).substring(7);
-    addProject({ id, name: `Orquestração ${projects.length + 1}` });
-  };
+  const { projects, activeProjectIndex, nextProject, prevProject } = useWorkspaceStore();
 
   // Lógica do Atalho (Ctrl + A)
   useEffect(() => {
@@ -35,11 +29,7 @@ export const WorkspaceBoard: React.FC = () => {
           <p className="text-vyasa-100 opacity-80 mb-10 leading-relaxed font-light">
             O seu workspace está sincronizado. Você não tem nenhum painel ativo no momento. Adicione Projetos ao cockpit para visualizá-los lado a lado.
           </p>
-          <button 
-            onClick={mockProjeto}
-            className="bg-vyasa-900 border border-saffron-500/40 text-saffron-400 font-bold py-3 px-8 rounded opacity-90 hover:opacity-100 hover:bg-vyasa-800 transition-all glow-saffron tracking-widest text-sm uppercase flex items-center gap-3">
-            <span className="text-lg leading-none">+</span> SIMULAR PROJETO
-          </button>
+          <p className="text-vyasa-100/40 text-sm">Clique em um projeto na sidebar para abri-lo aqui.</p>
         </div>
       </div>
     );
@@ -57,13 +47,6 @@ export const WorkspaceBoard: React.FC = () => {
 
   return (
     <div className="flex-grow flex flex-col w-full h-full pb-2 relative">
-      {/* Dev Debug Button temporário */}
-      <div className="absolute top-1 right-2 z-50">
-        <button onClick={mockProjeto} className="text-[10px] bg-vyasa-900/80 border border-saffron-500/50 text-saffron-400 px-3 py-1.5 rounded uppercase tracking-wider hover:bg-vyasa-800 backdrop-blur-md">
-          + Injetar Dev Data
-        </button>
-      </div>
-
       {isCarousel && (
         <div className="flex justify-between items-center mb-3 px-6 pb-2 border-b border-saffron-500/20 shrink-0">
           <div className="flex gap-4">

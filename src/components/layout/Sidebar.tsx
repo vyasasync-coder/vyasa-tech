@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 
 export const Sidebar: React.FC = () => {
-  const { rootHandle, addProject, projects } = useWorkspaceStore();
+  const { rootHandle, addProject, projects, showGlobalKB, setShowGlobalKB } = useWorkspaceStore();
   const [directories, setDirectories] = useState<any[]>([]);
 
   // Exportando a função loadDirectories caso o Wizard exija render de fora. 
@@ -24,8 +24,16 @@ export const Sidebar: React.FC = () => {
       if (!rootHandle) return;
       const dirs: any[] = [];
       try {
+        const IGNORED = new Set([
+          'node_modules', 'public', 'src', 'dist', 'build', '.next', '.nuxt',
+          '.vite', '.turbo', 'coverage', 'out', '.output', '__pycache__',
+        ]);
         for await (const entry of (rootHandle as any).values()) {
-          if (entry.kind === 'directory' && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+          if (
+            entry.kind === 'directory' &&
+            !entry.name.startsWith('.') &&
+            !IGNORED.has(entry.name)
+          ) {
             dirs.push(entry);
           }
         }
@@ -74,6 +82,22 @@ export const Sidebar: React.FC = () => {
           })}
         </ul>
       )}
+      {/* Knowledge Bank Global — fixo no rodapé da sidebar */}
+      <div className="mt-auto pt-4 border-t border-saffron-500/10 shrink-0">
+        <button
+          onClick={() => setShowGlobalKB(!showGlobalKB)}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm tracking-wide transition-all border ${
+            showGlobalKB
+              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+              : 'bg-vyasa-800/20 border-transparent text-vyasa-100/60 hover:bg-vyasa-800 hover:text-white'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span className="font-semibold">Knowledge Bank</span>
+          {showGlobalKB && <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />}
+        </button>
+        <p className="text-[9px] text-vyasa-100/20 tracking-widest text-center mt-1.5 uppercase">.vyasa-knowledge/ · Sistema Global</p>
+      </div>
     </aside>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
+import { InceptionChat } from '../inception/InceptionChat';
 
 interface WizardProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ export const NewProjectWizard: React.FC<WizardProps> = ({ onClose, onSuccess }) 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [inceptionHandle, setInceptionHandle] = useState<any>(null);
 
   // Form State
   const [projectName, setProjectName] = useState('');
@@ -87,18 +89,26 @@ Phase 4: Execution
       await planWritable.write(generatePlanMarkdown());
       await planWritable.close();
 
-      // SUCESSO!
-      setTimeout(() => {
-        setLoading(false);
-        onSuccess();
-        onClose();
-      }, 1000); // tempo estético
+      // SUCESSO! Abre o InceptionChat
+      setLoading(false);
+      setInceptionHandle(projectFolder);
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Falha ao criar os arquivos no seu sistema.');
       setLoading(false);
     }
   };
+
+  // Se o projeto foi criado, abre o InceptionChat
+  if (inceptionHandle) {
+    return (
+      <InceptionChat
+        projectHandle={inceptionHandle}
+        projectName={projectName.trim().toLowerCase().replace(/ /g, '-')}
+        onFinish={() => { onSuccess(); onClose(); }}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-vyasa-900/90 backdrop-blur-sm p-4">

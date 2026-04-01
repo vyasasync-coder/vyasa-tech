@@ -16,6 +16,8 @@ interface WorkspaceState {
   setActiveIndex: (index: number) => void;
   nextProject: () => void;
   prevProject: () => void;
+  showGlobalKB: boolean;
+  setShowGlobalKB: (v: boolean) => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({
@@ -23,6 +25,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   setRootHandle: (handle) => set({ rootHandle: handle }),
   projects: [],
   activeProjectIndex: 0,
+  showGlobalKB: false,
+  setShowGlobalKB: (v) => set({ showGlobalKB: v }),
   
   addProject: (project) => 
     set((state) => {
