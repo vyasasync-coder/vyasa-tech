@@ -1,4 +1,4 @@
-﻿name: Deploy Vyasa Sync
+name: Deploy Vyasa Sync
 
 on:
   push:
@@ -23,11 +23,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy via SCP (SSH)
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_HOST }}
+          host: 177.234.152.251
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
-          local-dir: ./dist/
+          port: 1157
+          source: "dist/*"
+          target: ${{ secrets.FTP_REMOTE_DIR }}
+          strip_components: 1
