@@ -23,13 +23,12 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy via SCP (SSH)
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: 177.234.152.251
+          server: 177.234.152.251
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          port: 1157
-          source: "dist/*"
-          target: ${{ secrets.FTP_REMOTE_DIR }}
-          strip_components: 1
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          port: 21
