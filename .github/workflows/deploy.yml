@@ -23,12 +23,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy via SCP (SSH)
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: pro113.dnspro.com.br
+          host: pro113.dnspro.com.br
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          local-dir: ./dist/
-          server-dir: public_html/vyasa/
-          port: 21
+          port: 1157
+          source: "dist/*"
+          target: public_html/vyasa/
+          strip_components: 1
