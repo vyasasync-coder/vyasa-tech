@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { ParticlesBackground } from '../layout/ParticlesBackground';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'forgot';
 
 const FEATURES = [
   {
@@ -48,14 +48,19 @@ export function AuthPage() {
   const [fullName, setFullName] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const { signIn, signUp, isLoading, error, setError } = useAuthStore();
+  const { signIn, signUp, resetPassword, isLoading, error, setError } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMsg('');
 
-    if (mode === 'login') {
+    if (mode === 'forgot') {
+      const ok = await resetPassword(email);
+      if (ok) {
+        setSuccessMsg('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
+      }
+    } else if (mode === 'login') {
       await signIn(email, password);
     } else {
       const ok = await signUp(email, password, fullName);
@@ -163,7 +168,7 @@ export function AuthPage() {
             <h1 className="text-xl font-bold tracking-widest text-saffron-400 uppercase">Vyasa Sync</h1>
           </div>
 
-          <div className="max-w-sm w-full mx-auto">
+          <div className="max-sm w-full mx-auto">
             {/* Tabs Login / Cadastro */}
             <div className="flex rounded-lg overflow-hidden border border-saffron-500/20 mb-8 bg-vyasa-800/30">
               <button
@@ -191,12 +196,14 @@ export function AuthPage() {
             {/* Headline do form */}
             <div className="mb-8">
               <h3 className="text-2xl font-serif text-white">
-                {mode === 'login' ? 'Bem-vindo de volta.' : 'Crie sua conta.'}
+                {mode === 'login' ? 'Bem-vindo de volta.' : mode === 'register' ? 'Crie sua conta.' : 'Recuperar senha.'}
               </h3>
               <p className="text-vyasa-100/50 text-sm mt-1">
                 {mode === 'login'
                   ? 'Entre para acessar seu cockpit de arquitetura.'
-                  : 'Configure seu workspace em segundos. Grátis para sempre.'}
+                  : mode === 'register'
+                  ? 'Configure seu workspace em segundos. Grátis para sempre.'
+                  : 'Enviaremos um link de redefinição para seu e-mail.'}
               </p>
             </div>
 
@@ -232,20 +239,22 @@ export function AuthPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs text-vyasa-100/50 tracking-widest uppercase mb-1.5">
-                  Senha
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder={mode === 'register' ? 'Mín. 8 caracteres' : '••••••••'}
-                  minLength={mode === 'register' ? 8 : undefined}
-                  className="w-full bg-vyasa-800/60 border border-saffron-500/20 focus:border-saffron-500/60 rounded-lg px-4 py-3 text-sm text-white placeholder-vyasa-100/30 outline-none transition-colors duration-200"
-                />
-              </div>
+              {mode !== 'forgot' && (
+                <div>
+                  <label className="block text-xs text-vyasa-100/50 tracking-widest uppercase mb-1.5">
+                    Senha
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder={mode === 'register' ? 'Mín. 8 caracteres' : '••••••••'}
+                    minLength={mode === 'register' ? 8 : undefined}
+                    className="w-full bg-vyasa-800/60 border border-saffron-500/20 focus:border-saffron-500/60 rounded-lg px-4 py-3 text-sm text-white placeholder-vyasa-100/30 outline-none transition-colors duration-200"
+                  />
+                </div>
+              )}
 
               {error && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-red-400 text-xs leading-relaxed">
@@ -268,9 +277,31 @@ export function AuthPage() {
                   ? 'Aguarde...'
                   : mode === 'login'
                   ? 'Entrar no Cockpit'
-                  : 'Criar Conta Gratuita'}
+                  : mode === 'register'
+                  ? 'Criar Conta Gratuita'
+                  : 'Enviar Link de Recuperação'}
               </button>
             </form>
+
+            {/* Link esqueci a senha / voltar pro login */}
+            <div className="text-center mt-4">
+              {mode === 'login' && (
+                <button
+                  onClick={() => switchMode('forgot')}
+                  className="text-xs text-saffron-400/50 hover:text-saffron-400 transition-colors underline underline-offset-2"
+                >
+                  Esqueci minha senha
+                </button>
+              )}
+              {mode === 'forgot' && (
+                <button
+                  onClick={() => switchMode('login')}
+                  className="text-xs text-saffron-400/50 hover:text-saffron-400 transition-colors underline underline-offset-2"
+                >
+                  ← Voltar para login
+                </button>
+              )}
+            </div>
 
             {/* Nota de privacidade */}
             <p className="text-center text-[11px] text-vyasa-100/30 mt-6 leading-relaxed">

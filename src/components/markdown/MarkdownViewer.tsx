@@ -152,27 +152,37 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ projectHandle })
         <span className="text-[10px] text-emerald-400 tracking-widest uppercase font-mono">Live · {syncLabel}</span>
       </div>
       <style>{`
-        .markdown-body h1, .markdown-body h2, .markdown-body h3 { color: var(--color-saffron-400); font-family: var(--font-serif); margin-top: 1.5em; margin-bottom: 0.5em; font-weight: bold; border-bottom: 1px solid rgba(244, 180, 26, 0.2); padding-bottom: 0.3em; line-height: 1.3;}
-        .markdown-body h1 { font-size: 1.4rem; }
-        .markdown-body h2 { font-size: 1.2rem; }
-        .markdown-body h3 { font-size: 1.05rem; }
-        .markdown-body p { margin-bottom: 1em; }
-        .markdown-body ul { margin-bottom: 1em; padding-left: 1.5em; list-style-type: disc; }
-        .markdown-body li { margin-bottom: 0.4em; }
+        .markdown-body h1 { color: var(--color-saffron-400); font-family: var(--font-serif); font-size: 1.4rem; font-weight: bold; margin-top: 0; margin-bottom: 0.3em; line-height: 1.3; border-bottom: 2px solid rgba(244, 180, 26, 0.3); padding-bottom: 0.4em; }
+        .markdown-body h2 {
+          color: var(--color-saffron-400); font-family: var(--font-serif); font-size: 1.05rem; font-weight: bold;
+          margin-top: 1.8em; margin-bottom: 0.6em; line-height: 1.3;
+          background: linear-gradient(90deg, rgba(244,180,26,0.08) 0%, transparent 100%);
+          border-left: 3px solid var(--color-saffron-500);
+          padding: 0.5em 0.8em;
+          border-radius: 0 6px 6px 0;
+          letter-spacing: 0.03em;
+        }
+        .markdown-body h3 { color: var(--color-saffron-400); font-family: var(--font-serif); font-size: 0.95rem; font-weight: bold; margin-top: 1.2em; margin-bottom: 0.4em; opacity: 0.85; }
+        .markdown-body p { margin-bottom: 0.8em; font-size: 0.85em; }
+        .markdown-body ul { margin-bottom: 0.6em; padding-left: 1.5em; list-style-type: disc; }
+        .markdown-body li { margin-bottom: 0.3em; }
         .markdown-body a { color: var(--color-saffron-400); text-decoration: underline; }
-        .markdown-body code { background: rgba(0,0,0,0.3); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; font-size: 0.85em;  border: 1px solid rgba(255,255,255,0.05); }
+        .markdown-body code { background: rgba(0,0,0,0.3); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; font-size: 0.85em; border: 1px solid rgba(255,255,255,0.05); }
         .markdown-body pre { background: rgba(0,0,0,0.4); padding: 1em; border-radius: 6px; overflow-x: auto; margin-bottom: 1em; border: 1px solid rgba(255,255,255,0.05); }
         .markdown-body pre code { background: none; padding: 0; border: none; font-size: 0.8em; }
-        .markdown-body blockquote { border-left: 3px solid var(--color-saffron-500); padding-left: 1em; color: rgba(226, 232, 240, 0.7); margin-left: 0; margin-bottom: 1em;}
-        
-        .task-list-item { list-style-type: none !important; margin-left: -1.5em; display: flex; align-items: flex-start; gap: 0.6em; transition: opacity 0.3s;}
+        .markdown-body blockquote { border-left: 3px solid rgba(244,180,26,0.3); padding: 0.5em 0.8em; color: rgba(226, 232, 240, 0.5); margin-left: 0; margin-bottom: 1em; background: rgba(244,180,26,0.03); border-radius: 0 4px 4px 0; font-size: 0.8em; font-style: italic; }
+        .markdown-body hr { border: none; border-top: 1px solid rgba(244, 180, 26, 0.15); margin: 1.5em 0; }
+
+        .task-list-item { list-style-type: none !important; margin-left: -1.5em; display: flex; align-items: flex-start; gap: 0.6em; transition: all 0.2s; padding: 0.15em 0; }
+        .task-list-item:hover { background: rgba(244,180,26,0.03); margin-left: -1.7em; padding-left: 0.2em; border-radius: 4px; }
         .task-list-item input[type="checkbox"] {
-          appearance: none; min-width: 16px; height: 16px; border: 1px solid var(--color-saffron-500); border-radius: 3px; background: rgba(10, 14, 23, 0.5); cursor: pointer; position: relative; margin-top: 0.2em; transition: all 0.2s;
+          appearance: none; min-width: 16px; height: 16px; border: 1.5px solid rgba(244,180,26,0.4); border-radius: 3px; background: rgba(10, 14, 23, 0.5); cursor: pointer; position: relative; margin-top: 0.2em; transition: all 0.2s;
         }
-        .task-list-item input[type="checkbox"]:checked { background: var(--color-saffron-500); box-shadow: 0 0 10px rgba(244, 180, 26, 0.5); border-color: transparent;}
+        .task-list-item input[type="checkbox"]:hover { border-color: var(--color-saffron-500); box-shadow: 0 0 8px rgba(244, 180, 26, 0.2); }
+        .task-list-item input[type="checkbox"]:checked { background: var(--color-saffron-500); box-shadow: 0 0 10px rgba(244, 180, 26, 0.4); border-color: transparent; }
         .task-list-item input[type="checkbox"]:checked::after { content: '✔'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-vyasa-900); font-size: 10px; font-weight: bold; }
-        .task-list-item.checked { text-decoration: line-through; opacity: 0.4; }
-        .task-list-item:hover { opacity: 1; }
+        .task-list-item.checked { text-decoration: line-through; opacity: 0.35; }
+        .task-list-item.checked:hover { opacity: 0.6; }
       `}</style>
 
       <ReactMarkdown 

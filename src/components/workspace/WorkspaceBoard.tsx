@@ -78,7 +78,7 @@ export const WorkspaceBoard: React.FC = () => {
 
       {/* Container Principal de Ocupação Máxima */}
       <div className={`grid flex-grow h-full w-full outline-none overflow-hidden ${
-        visibleProjects.length === 1 ? 'grid-cols-1 md:max-w-2xl mx-auto' :
+        visibleProjects.length === 1 ? 'grid-cols-1 md:max-w-4xl mx-auto' :
         visibleProjects.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
         visibleProjects.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
         'grid-cols-1 md:grid-cols-4'

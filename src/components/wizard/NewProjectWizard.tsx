@@ -24,8 +24,12 @@ export const NewProjectWizard: React.FC<WizardProps> = ({ onClose, onSuccess }) 
   const prevStep = () => setStep(s => s - 1);
 
   const generateCursorRules = (stack: string) => {
-    let rules = `You are an expert AI Developer inside the Vyasa Sync ecosystem.\n`;
-    rules += `ALWAYS read the PLAN.md or task.md file before writing code.\n\n`;
+    let rules = `You are an expert AI Developer inside the Vyasa Sync ecosystem.\n\n`;
+    rules += `IMPORTANTE: Leia o arquivo task.md ANTES de começar qualquer implementação.\n`;
+    rules += `Ele contém o checklist completo do projeto. Siga a ordem das tasks.\n`;
+    rules += `Marque cada task concluída com "- [x]" no task.md.\n`;
+    rules += `Se surgir uma feature nova durante a implementação, adicione um novo\n`;
+    rules += `"- [ ]" na fase apropriada do task.md antes de implementar.\n\n`;
     if (stack === 'web') {
       rules += `[WEB DEVELOPMENT RULES]\n- Use React 18 / Next.js.\n- Use Tailwind CSS v4.\n- Implement responsive, mobile-first design.\n- Ensure high aesthetic quality.\n`;
     } else if (stack === 'mobile') {
@@ -59,7 +63,34 @@ Phase 4: Execution
   };
 
   const generatePlanMarkdown = () => {
-    return `# ${projectName.toUpperCase()}\n\n## Missão (Briefing)\n${briefing || 'Preencha o direcionamento inicial aqui.'}\n\n## Fases e Tasks\n- [ ] Fase 1: Fundação do Sistema\n- [ ] Fase 2: Regras de Negócio Básicas\n- [ ] Fase 3: Polimento UX\n`;
+    return `# ${projectName.toUpperCase()}
+
+## Missão
+${briefing || 'Preencha o direcionamento inicial aqui.'}
+
+## Stack
+A definir no Inception Chat.
+
+---
+
+## Fase 1: Fundação do Sistema
+- [ ] Definir stack e inicializar projeto
+- [ ] Configurar estrutura de pastas
+- [ ] Instalar dependências base
+
+## Fase 2: Regras de Negócio Básicas
+- [ ] A detalhar no Inception Chat (Fase 2: Planejamento)
+
+## Fase 3: Polimento UX
+- [ ] A detalhar no Inception Chat (Fase 2: Planejamento)
+
+---
+
+> INSTRUÇÃO PARA O AGENTE: Você pode adicionar novas tasks a este arquivo.
+> Se durante a implementação surgir uma necessidade não prevista, adicione
+> um novo "- [ ]" na fase apropriada ou crie uma nova fase.
+> Marque tasks concluídas com "- [x]".
+`;
   };
 
   // "Criar Pasta" — abre picker para escolher onde criar, cria a subpasta lá

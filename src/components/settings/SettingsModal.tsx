@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../store/authStore';
 
@@ -7,8 +7,7 @@ interface SettingsModalProps {
 }
 
 const LS_KEYS = {
-  OPENAI: 'vyasa_key_openai',
-  ANTHROPIC: 'vyasa_key_anthropic',
+  GROQ: 'vyasa_key_groq',
   OPENROUTER: 'vyasa_key_openrouter',
 };
 
@@ -19,8 +18,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [tab, setTab] = useState<Tab>('keys');
 
   // API Keys — salvas apenas no localStorage (nunca sobem ao servidor)
-  const [openaiKey, setOpenaiKey] = useState('');
-  const [anthropicKey, setAnthropicKey] = useState('');
+  const [groqKey, setGroqKey] = useState('');
   const [openrouterKey, setOpenrouterKey] = useState('');
   const [keysSaved, setKeysSaved] = useState(false);
 
@@ -32,8 +30,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [profileError, setProfileError] = useState('');
 
   useEffect(() => {
-    setOpenaiKey(localStorage.getItem(LS_KEYS.OPENAI) || '');
-    setAnthropicKey(localStorage.getItem(LS_KEYS.ANTHROPIC) || '');
+    setGroqKey(localStorage.getItem(LS_KEYS.GROQ) || '');
     setOpenrouterKey(localStorage.getItem(LS_KEYS.OPENROUTER) || '');
   }, []);
 
@@ -45,8 +42,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   }, [profile]);
 
   const saveKeys = () => {
-    localStorage.setItem(LS_KEYS.OPENAI, openaiKey.trim());
-    localStorage.setItem(LS_KEYS.ANTHROPIC, anthropicKey.trim());
+    localStorage.setItem(LS_KEYS.GROQ, groqKey.trim());
     localStorage.setItem(LS_KEYS.OPENROUTER, openrouterKey.trim());
     setKeysSaved(true);
     setTimeout(() => setKeysSaved(false), 2500);
@@ -126,39 +122,31 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           {/* ── TAB: API KEYS ── */}
           {tab === 'keys' && (
             <>
-              <div className="bg-vyasa-800/40 border border-saffron-500/10 rounded-lg px-4 py-3 text-[11px] text-vyasa-100/40 leading-relaxed">
-                <span className="text-saffron-400/70">Segurança:</span> Todas as chaves são salvas exclusivamente no{' '}
-                <code className="text-saffron-500/60">localStorage</code> do seu navegador.
-                Nunca são transmitidas ou armazenadas na nuvem.
+              <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-lg px-4 py-3 text-[11px] text-emerald-400/70 leading-relaxed">
+                Todos os modelos são <span className="font-bold text-emerald-400">100% gratuitos</span>. Crie suas keys gratis em groq.com e openrouter.ai.
+                As chaves ficam salvas apenas no seu navegador.
               </div>
 
               <KeyField
-                label="OpenAI API Key"
-                placeholder="sk-proj-..."
-                value={openaiKey}
-                onChange={setOpenaiKey}
-                hint="Usada para GPT-4o e embeddings"
-              />
-              <KeyField
-                label="Anthropic API Key"
-                placeholder="sk-ant-..."
-                value={anthropicKey}
-                onChange={setAnthropicKey}
-                hint="Usada para Claude Opus / Sonnet"
+                label="Groq API Key"
+                placeholder="gsk_..."
+                value={groqKey}
+                onChange={setGroqKey}
+                hint="groq.com → Developers → Free Key — Llama 3.3 70B, Mixtral, Gemma 2, Qwen"
               />
               <KeyField
                 label="OpenRouter API Key"
                 placeholder="sk-or-v1-..."
                 value={openrouterKey}
                 onChange={setOpenrouterKey}
-                hint="Acesso unificado a múltiplos modelos"
+                hint="openrouter.ai → API Keys — DeepSeek V3, Qwen 72B, Mistral, Gemma"
               />
 
               <button
                 onClick={saveKeys}
                 className="w-full bg-gradient-to-r from-saffron-600 to-saffron-500 text-vyasa-900 font-bold py-3 rounded-lg tracking-widest text-sm uppercase hover:opacity-90 transition-all"
               >
-                {keysSaved ? '✓ Salvo com sucesso' : 'Salvar Chaves Localmente'}
+                {keysSaved ? '✓ Salvo com sucesso' : 'Salvar Chaves'}
               </button>
             </>
           )}

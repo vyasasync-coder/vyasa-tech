@@ -6,14 +6,14 @@ import { WorkspaceBoard } from './components/workspace/WorkspaceBoard';
 import { Sidebar } from './components/layout/Sidebar';
 import { NewProjectWizard } from './components/wizard/NewProjectWizard';
 import { ParticlesBackground } from './components/layout/ParticlesBackground';
-import { AuthPage } from './components/auth/AuthPage';
 import { WelcomeScreen } from './components/onboarding/WelcomeScreen';
+import { AuthPage } from './components/auth/AuthPage';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { GlobalKnowledgeBank } from './components/knowledge/GlobalKnowledgeBank';
 
 function App() {
-  const { isGranted, rootHandle, requestAccess, isRestoring, error: fsError } = useFileSystem();
-  const { session, isLoading, initAuth, profile, signOut } = useAuthStore();
+  const { isGranted, rootHandle, requestAccess, isRestoring } = useFileSystem();
+  const { session, initAuth, profile, signOut } = useAuthStore();
   const { showGlobalKB } = useWorkspaceStore();
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -36,8 +36,8 @@ function App() {
     window.dispatchEvent(new Event('vyasa-reload-sidebar'));
   };
 
-  // ── Estado 0: Carregando sessão ou restaurando workspace ──
-  if (isLoading || isRestoring) {
+  // ── Estado 0: Restaurando workspace (só bloqueia se tiver restore pendente) ──
+  if (isRestoring) {
     return (
       <div className="min-h-screen bg-vyasa-900 flex items-center justify-center">
         <ParticlesBackground />
@@ -49,7 +49,7 @@ function App() {
     );
   }
 
-  // ── Estado 1: Não autenticado → Landing + Login/Register ──
+  // ── Estado 1: Não autenticado → Tela de Login ──
   if (!session) {
     return <AuthPage />;
   }
@@ -62,8 +62,8 @@ function App() {
   // ── Estado 3: Autenticado + Workspace conectado → Cockpit completo ──
   const displayName =
     profile?.full_name ||
-    session.user?.user_metadata?.full_name ||
-    session.user?.email?.split('@')[0] ||
+    session?.user?.user_metadata?.full_name ||
+    session?.user?.email?.split('@')[0] ||
     'Arquiteto';
 
   return (
@@ -113,7 +113,7 @@ function App() {
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             <span className="text-xs font-sans text-vyasa-100 opacity-90 uppercase tracking-widest">
-              Templo: {rootHandle.name}
+              Workspace: {rootHandle.name}
             </span>
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-saffron-500/40 group-hover:text-saffron-400 transition-colors"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
