@@ -26,9 +26,9 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: 177.234.152.251
+          server: pro113.dnspro.com.br
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          server-dir: public_html/vyasa/
           port: 21
