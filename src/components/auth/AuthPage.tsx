@@ -91,7 +91,8 @@ export function AuthPage() {
       <div className="relative z-10 flex w-full min-h-screen">
 
         {/* ── LADO ESQUERDO: BRAND MANIFESTO ── */}
-        <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 xl:p-16">
+        <div className="hidden lg:flex flex-col justify-between w-1/2 p-10 xl:p-20 overflow-y-auto no-scrollbar">
+          <div className="max-w-lg w-full mx-auto flex flex-col justify-between h-full py-8">
           {/* Logo */}
           <div className="flex items-center gap-4">
             <img
@@ -155,9 +156,11 @@ export function AuthPage() {
             ))}
           </div>
         </div>
+        {/* Fim do max-w-lg wrapper */}
+        </div>
 
         {/* ── DIVISOR ── */}
-        <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-saffron-500/20 to-transparent my-12" />
+        <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-saffron-500/20 to-transparent my-16" />
 
         {/* ── LADO DIREITO: FORMULÁRIO ── */}
         <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 sm:p-12 xl:p-16">
@@ -168,7 +171,7 @@ export function AuthPage() {
             <h1 className="text-xl font-bold tracking-widest text-saffron-400 uppercase">Vyasa Sync</h1>
           </div>
 
-          <div className="max-sm w-full mx-auto">
+          <div className="max-w-sm w-full mx-auto">
             {/* Tabs Login / Cadastro */}
             <div className="flex rounded-lg overflow-hidden border border-saffron-500/20 mb-8 bg-vyasa-800/30">
               <button
