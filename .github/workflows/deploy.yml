@@ -31,5 +31,5 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           port: 1157
           source: "dist/*"
-          target: public_html/vyasa/
+          target: vyasa.urbanpages.com.br/
           strip_components: 1
