@@ -91,55 +91,55 @@ export function AuthPage() {
       <div className="relative z-10 flex w-full min-h-screen">
 
         {/* ── LADO ESQUERDO: BRAND MANIFESTO ── */}
-        <div className="hidden lg:flex flex-col justify-between w-1/2 p-10 xl:p-20 overflow-y-auto no-scrollbar">
-          <div className="max-w-lg w-full mx-auto flex flex-col justify-between h-full py-8">
+        <div className="hidden lg:flex flex-col justify-center w-[55%] p-8 xl:p-12 overflow-y-auto no-scrollbar">
+          <div className="max-w-2xl w-full mx-auto flex flex-col justify-center gap-8 h-full py-4">
           {/* Logo */}
           <div className="flex items-center gap-4">
             <img
               src="/logo-vyasa.png"
               alt="Vyasa Sync"
-              className="w-12 h-12 rounded-full shadow-[0_0_20px_rgba(244,180,26,0.3)] object-cover"
+              className="w-10 h-10 rounded-full shadow-[0_0_20px_rgba(244,180,26,0.3)] object-cover"
             />
             <div>
-              <h1 className="text-2xl font-bold tracking-[0.3em] text-saffron-400 uppercase">
+              <h1 className="text-xl font-bold tracking-[0.3em] text-saffron-400 uppercase">
                 Vyasa Sync
               </h1>
-              <p className="text-[10px] tracking-[0.2em] text-vyasa-100/40 uppercase">
+              <p className="text-[9px] tracking-[0.2em] text-vyasa-100/40 uppercase">
                 AI Cockpit · Architecture Layer
               </p>
             </div>
           </div>
 
           {/* Headline central */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
-              <p className="text-saffron-400/60 text-sm tracking-[0.3em] uppercase mb-4">
+              <p className="text-saffron-400/60 text-xs tracking-[0.3em] uppercase mb-3">
                 O Cockpit da Nova Era
               </p>
-              <h2 className="text-5xl xl:text-6xl font-serif text-white leading-tight">
+              <h2 className="text-4xl xl:text-5xl font-serif text-white leading-tight">
                 Arquitetura de
                 <br />
                 <span className="text-saffron-400">Software</span>
                 <br />
                 com IA.
               </h2>
-              <p className="mt-6 text-vyasa-100/60 text-lg leading-relaxed max-w-md">
+              <p className="mt-4 text-vyasa-100/60 text-base leading-relaxed max-w-lg">
                 Orquestre múltiplos agentes de IA a partir de um único ponto de comando.
                 Seus projetos respiram no seu disco. Sua inteligência vive na nuvem.
               </p>
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-1 gap-4 max-w-md">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 max-w-2xl">
               {FEATURES.map((f) => (
                 <div
                   key={f.title}
-                  className="flex items-start gap-4 p-4 rounded-lg bg-vyasa-800/40 border border-saffron-500/10 hover:border-saffron-500/30 transition-colors duration-300"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-vyasa-800/40 border border-saffron-500/10 hover:border-saffron-500/30 transition-colors duration-300"
                 >
                   <div className="mt-0.5 text-saffron-400 shrink-0">{f.icon}</div>
                   <div>
                     <p className="text-white text-sm font-semibold tracking-wide">{f.title}</p>
-                    <p className="text-vyasa-100/50 text-xs mt-0.5 leading-relaxed">{f.desc}</p>
+                    <p className="text-vyasa-100/50 text-[11px] mt-0.5 leading-relaxed">{f.desc}</p>
                   </div>
                 </div>
               ))}
@@ -147,23 +147,23 @@ export function AuthPage() {
           </div>
 
           {/* Stats rodapé */}
-          <div className="flex items-center gap-10">
+          <div className="flex items-center gap-8 mt-2">
             {STATS.map((s) => (
               <div key={s.label}>
-                <p className="text-3xl font-serif text-saffron-400">{s.value}</p>
-                <p className="text-[11px] text-vyasa-100/40 tracking-wide mt-1">{s.label}</p>
+                <p className="text-2xl font-serif text-saffron-400">{s.value}</p>
+                <p className="text-[10px] text-vyasa-100/40 tracking-wide mt-1">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
-        {/* Fim do max-w-lg wrapper */}
+        {/* Fim do max-w-2xl wrapper */}
         </div>
 
         {/* ── DIVISOR ── */}
         <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-saffron-500/20 to-transparent my-16" />
 
         {/* ── LADO DIREITO: FORMULÁRIO ── */}
-        <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 sm:p-12 xl:p-16">
+        <div className="flex flex-col justify-center w-full lg:w-[45%] p-8 sm:p-12">
 
           {/* Logo mobile */}
           <div className="flex lg:hidden items-center gap-3 mb-10">
@@ -171,7 +171,7 @@ export function AuthPage() {
             <h1 className="text-xl font-bold tracking-widest text-saffron-400 uppercase">Vyasa Sync</h1>
           </div>
 
-          <div className="max-w-sm w-full mx-auto">
+          <div className="max-w-[340px] w-full mx-auto">
             {/* Tabs Login / Cadastro */}
             <div className="flex rounded-lg overflow-hidden border border-saffron-500/20 mb-8 bg-vyasa-800/30">
               <button
